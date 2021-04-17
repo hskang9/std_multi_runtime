@@ -1,0 +1,14 @@
+[profile.release]
+panic = 'unwind'
+
+[workspace]
+members = [
+    'node/standard',
+    'node/opportunity',
+    'pallets/*',
+    'runtime/standard',
+    'runtime/opportunity',
+    'orml/traits',
+    'orml/currencies',
+    'orml/tokens',
+]
