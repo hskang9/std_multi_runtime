@@ -63,10 +63,9 @@ pub struct Extensions {
 }
 
 impl Extensions {
-	/// Try to get the extension from the given `ChainSpec`.
-	pub fn try_get(chain_spec: &dyn sc_service::ChainSpec) -> Option<&Self> {
-		sc_chain_spec::get_extension(chain_spec.extensions())
-	}
+	//pub fn try_get(chain_spec: &dyn sc_service::ChainSpec) -> Option<&Self> {
+	//	sc_chain_spec::get_extension(chain_spec.extensions())
+	//}
 }
 
 type AccountPublic = <Signature as Verify>::Signer;

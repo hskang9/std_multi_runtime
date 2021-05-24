@@ -33,8 +33,6 @@ pub mod module {
 
 	pub trait WeightInfo {
 		fn bid_collateral_auction() -> Weight;
-		fn bid_surplus_auction() -> Weight;
-		fn bid_debit_auction() -> Weight;
 		fn on_finalize(c: u32) -> Weight;
 	}
 
@@ -97,7 +95,7 @@ pub mod module {
 		StorageDoubleMap<_, Twox64Concat, T::BlockNumber, Blake2_128Concat, T::AuctionId, (), OptionQuery>;
 
 	#[pallet::pallet]
-	pub struct Pallet<T>(PhantomData<T>);
+	pub struct Pallet<T>(_);
 
 	#[pallet::hooks]
 	impl<T: Config> Hooks<T::BlockNumber> for Pallet<T> {

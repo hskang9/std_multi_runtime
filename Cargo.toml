@@ -5,7 +5,7 @@ panic = 'unwind'
 members = [
     'node/standard',
     'node/opportunity',
-    'pallets/*',
+    'pallets/template',
     'runtime/standard',
     'runtime/opportunity',
     'orml/traits',

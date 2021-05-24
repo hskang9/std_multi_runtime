@@ -10,7 +10,7 @@ use sp_std::prelude::*;
 use codec::{ Encode};
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
-	ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature, ModuleId,
+	ApplyExtrinsicResult, generic, create_runtime_str, impl_opaque_keys, MultiSignature,
 	transaction_validity::{TransactionPriority, TransactionValidity, TransactionSource},
 };
 
@@ -36,8 +36,8 @@ pub use sp_runtime::BuildStorage;
 pub use pallet_timestamp::Call as TimestampCall;
 pub use pallet_balances::Call as BalancesCall;
 
-use frame_support::{
-    construct_runtime, debug, parameter_types, 
+use frame_support::{ PalletId,
+    construct_runtime, parameter_types, 
     traits::{ KeyOwnerProofSystem, Randomness},
     weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
@@ -235,6 +235,8 @@ impl frame_system::Config for Runtime {
 	type SystemWeightInfo = ();
 	/// This is used as an identifier of the chain. 42 is the generic substrate prefix.
 	type SS58Prefix = SS58Prefix;
+	type OnSetCode = ();
+
 }
 
 impl<LocalCall> frame_system::offchain::CreateSignedTransaction<LocalCall> for Runtime
@@ -436,6 +438,7 @@ impl pallet_staking::Config for Runtime {
     type WeightInfo = pallet_staking::weights::SubstrateWeight<Runtime>;
     type EraPayout = pallet_staking::ConvertCurve<RewardCurve>;
 	type ElectionProvider = onchain::OnChainSequentialPhragmen<Self>;
+	const MAX_NOMINATIONS: u32 = 16;
 
 }
 
@@ -518,12 +521,12 @@ pub type Amount = i128;
 pub type CurrencyId = u32;
 
 parameter_types! {
-	pub const TemplateModuleId: ModuleId = ModuleId(*b"template");
+	pub const TemplatePalletId: PalletId = PalletId(*b"template");
 }
 
 impl pallet_template::Config for Runtime {
 	type Event = Event;
-	type ModuleId = TemplateModuleId;
+	type PalletId = TemplatePalletId;
 }
 
 parameter_type_with_key! {
@@ -533,7 +536,7 @@ parameter_type_with_key! {
 }
 
 parameter_types! {
-	pub TreasuryModuleAccount: AccountId = TemplateModuleId::get().into_account();
+	pub TreasuryModuleAccount: AccountId = TemplatePalletId::get().into_account();
 }
 
 impl orml_tokens::Config for Runtime {
@@ -567,26 +570,26 @@ impl pallet_standard_oracle::Config for Runtime {
 }
 
 parameter_types! {
-	pub const SysModuleId: ModuleId = ModuleId(*b"stnd/mkt");
+	pub const SysPalletId: PalletId = PalletId(*b"stnd/mkt");
 }
 
 impl pallet_standard_market::Config for Runtime {
 	type Event = Event;
 	type Currency = Currencies;
-	type SystemModuleId = SysModuleId;
+	type SystemPalletId = SysPalletId;
 }
 
 parameter_types! {
-	pub const VltModuleId: ModuleId = ModuleId(*b"stnd/vlt");
+	pub const VltPalletId: PalletId = PalletId(*b"stnd/vlt");
 
 }
 
 
 impl pallet_standard_vault::Config for Runtime {
 	type Event = Event;
-	type VaultModuleId = VltModuleId;
+	type VaultPalletId = VltPalletId;
 	type Currency = Currencies;
-	type SystemModuleId = SysModuleId;
+	type SystemPalletId = SysPalletId;
 }
 
 use frame_election_provider_support::onchain;
@@ -667,7 +670,7 @@ pub type Executive = frame_executive::Executive<
     Block,
     frame_system::ChainContext<Runtime>,
     Runtime,
-    AllModules,
+    AllPallets,
 >;
 
 impl_runtime_apis! {

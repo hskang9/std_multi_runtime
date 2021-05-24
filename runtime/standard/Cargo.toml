@@ -195,6 +195,7 @@ branch = 'rococo-v1'
 version = '3.0.0'
 
 # Cumulus dependencies
+# Cumulus dependencies
 [dependencies.parachain-info]
 default-features = false
 git = 'https://github.com/paritytech/cumulus.git'
@@ -211,7 +212,17 @@ git = 'https://github.com/paritytech/cumulus.git'
 branch = 'rococo-v1'
 default-features = false
 
-[dependencies.cumulus-pallet-xcm-handler]
+[dependencies.cumulus-pallet-xcm]
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'rococo-v1'
+default-features = false
+
+[dependencies.cumulus-pallet-xcmp-queue]
+git = 'https://github.com/paritytech/cumulus.git'
+branch = 'rococo-v1'
+default-features = false
+
+[dependencies.cumulus-primitives-utility]
 git = 'https://github.com/paritytech/cumulus.git'
 branch = 'rococo-v1'
 default-features = false
@@ -236,6 +247,12 @@ default-features = false
 git = 'https://github.com/paritytech/polkadot'
 branch = 'rococo-v1'
 default-features = false
+
+[dependencies.pallet-xcm]
+git = 'https://github.com/paritytech/polkadot'
+branch = 'rococo-v1'
+default-features = false
+
 
 [dependencies.template]
 default-features = false
@@ -294,7 +311,9 @@ std = [
 	'xcm/std',
 	'xcm-builder/std',
 	'xcm-executor/std',
-	'cumulus-pallet-xcm-handler/std',
+	'cumulus-pallet-xcm/std',
+	'cumulus-pallet-xcmp-queue/std',
+	'cumulus-primitives-utility/std',
 	'template/std',
 	'orml-tokens/std',
     'orml-currencies/std',
