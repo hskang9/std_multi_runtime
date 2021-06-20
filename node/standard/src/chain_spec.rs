@@ -1,5 +1,5 @@
 use cumulus_primitives_core::ParaId;
-use standard_runtime::{AccountId, Signature};
+use standard_runtime::{AccountId, Signature, AuraId};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
@@ -12,7 +12,7 @@ use sp_consensus_babe::AuthorityId as BabeId;
 use standard_runtime::opaque::SessionKeys;
 
 use standard_runtime::{
-	BabeConfig, ImOnlineConfig, SessionConfig, StakingConfig, AuthorityDiscoveryConfig, StakerStatus, Perbill, TokensConfig, AssetRegistryConfig, OracleConfig
+	BabeConfig, ImOnlineConfig, SessionConfig, StakingConfig, AuthorityDiscoveryConfig, StakerStatus, Perbill, TokensConfig, AssetRegistryConfig, OracleConfig,
 };
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
@@ -32,11 +32,12 @@ sp_consensus_babe::BabeEpochConfiguration {
 
 
 fn session_keys(
+	aura: AuraId,
 	babe: BabeId,
 	im_online: ImOnlineId,
-	authority_discovery: AuthorityDiscoveryId,
-) -> SessionKeys {
+	authority_discovery: AuthorityDiscoveryId, ) -> SessionKeys {
 	SessionKeys {
+		aura,
 		babe,
 		im_online,
 		authority_discovery,
@@ -75,6 +76,7 @@ pub fn authority_keys_from_seed(
 ) -> (
 	AccountId,
 	AccountId,
+	AuraId,
 	BabeId,
 	ImOnlineId,
 	AuthorityDiscoveryId,
@@ -82,6 +84,7 @@ pub fn authority_keys_from_seed(
 	(
 		get_account_id_from_seed::<sr25519::Public>(&format!("{}//stash", seed)),
 		get_account_id_from_seed::<sr25519::Public>(seed),
+		get_from_seed::<AuraId>(seed),
 		get_from_seed::<BabeId>(seed),
 		get_from_seed::<ImOnlineId>(seed),
 		get_from_seed::<AuthorityDiscoveryId>(seed),
@@ -114,6 +117,12 @@ pub fn development_config(id: ParaId) -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 				],
 				id,
+				vec![
+					get_from_seed::<AuraId>("Alice"),
+					get_from_seed::<AuraId>("Bob"),
+					get_from_seed::<AuraId>("Alice//stash"),
+					get_from_seed::<AuraId>("Bob//stash"),
+				],
 			)
 		},
 		vec![],
@@ -153,6 +162,12 @@ pub fn local_testnet_config(id: ParaId) -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
 				id,
+				vec![
+					get_from_seed::<AuraId>("Alice"),
+					get_from_seed::<AuraId>("Bob"),
+					get_from_seed::<AuraId>("Alice//stash"),
+					get_from_seed::<AuraId>("Bob//stash"),
+				],
 			)
 		},
 		vec![],
@@ -170,6 +185,7 @@ fn testnet_genesis(
 	initial_authorities: Vec<(
 		AccountId,
 		AccountId,
+		AuraId,
 		BabeId,
 		ImOnlineId,
 		AuthorityDiscoveryId,
@@ -177,6 +193,7 @@ fn testnet_genesis(
 	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
+	initials: Vec<AuraId>,
 ) -> standard_runtime::GenesisConfig {
 	standard_runtime::GenesisConfig {
 		frame_system: standard_runtime::SystemConfig {
@@ -204,7 +221,7 @@ fn testnet_genesis(
 					(
 						x.0.clone(),
 						x.0.clone(),
-						session_keys(x.2.clone(), x.3.clone(), x.4.clone()),
+						session_keys(x.2.clone(), x.3.clone(), x.4.clone(), x.5.clone()),
 					)
 				})
 				.collect::<Vec<_>>(),
@@ -237,6 +254,10 @@ fn testnet_genesis(
 		},
 		pallet_standard_oracle: OracleConfig{
 			oracles: [get_account_id_from_seed::<sr25519::Public>("Alice")].to_vec()
-        },
+		},
+		pallet_aura: standard_runtime::AuraConfig {
+			authorities: initials,
+		},
+		cumulus_pallet_aura_ext: Default::default(),
 	}
 }

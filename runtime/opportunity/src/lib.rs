@@ -29,6 +29,7 @@ use pallet_grandpa::fg_primitives;
 use sp_version::RuntimeVersion;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
+use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
@@ -38,7 +39,7 @@ pub use pallet_balances::Call as BalancesCall;
 
 use frame_support::{ PalletId,
     construct_runtime, parameter_types, 
-    traits::{ KeyOwnerProofSystem, Randomness},
+    traits::{ KeyOwnerProofSystem},
     weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
         DispatchClass, IdentityFee, Weight,
@@ -103,6 +104,7 @@ pub mod opaque {
 
 	impl_opaque_keys! {
 		pub struct SessionKeys {
+			pub aura: Aura,
 			pub grandpa: Grandpa,
 			pub babe: Babe,
 			pub im_online: ImOnline,
@@ -388,7 +390,6 @@ impl pallet_offences::Config for Runtime {
 	type Event = Event;
 	type IdentificationTuple = pallet_session::historical::IdentificationTuple<Self>;
 	type OnOffenceHandler = Staking;
-	type WeightSoftLimit = OffencesWeightSoftLimit;
 }
 
 
@@ -547,6 +548,8 @@ impl orml_tokens::Config for Runtime {
 	type WeightInfo = ();
 	type ExistentialDeposits = ExistentialDeposits;
 	type OnDust = orml_tokens::TransferDust<Runtime, TreasuryModuleAccount>;
+	type MaxLocks = MaxLocks;
+
 }
 
 parameter_types! {
@@ -602,6 +605,10 @@ impl frame_election_provider_support::onchain::Config for Runtime {
 	type DataProvider = Staking;
 }
 
+impl pallet_aura::Config for Runtime {
+	type AuthorityId = AuraId;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -627,6 +634,8 @@ construct_runtime!(
 		Session: pallet_session::{Pallet, Call, Storage, Event, Config<T>},
 		Historical: pallet_session_historical::{Pallet},
 		// Include the custom logic from the template pallet in the runtime.
+		Aura: pallet_aura::{Pallet, Config<T>},
+
 
 		TemplateModule: pallet_template::{Pallet, Call, Storage, Event<T>},
 		Tokens: orml_tokens::{Pallet, Storage, Call, Event<T>, Config<T>},
@@ -715,9 +724,6 @@ impl_runtime_apis! {
 			data.check_extrinsics(&block)
 		}
 
-		fn random_seed() -> <Block as BlockT>::Hash {
-			RandomnessCollectiveFlip::random_seed().0
-		}
 	}
 
 	impl sp_transaction_pool::runtime_api::TaggedTransactionQueue<Block> for Runtime {
@@ -787,7 +793,16 @@ impl_runtime_apis! {
 			)
 		}
     }
-    
+	
+	impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {
+		fn slot_duration() -> sp_consensus_aura::SlotDuration {
+			sp_consensus_aura::SlotDuration::from_millis(Aura::slot_duration())
+		}
+
+		fn authorities() -> Vec<AuraId> {
+			Aura::authorities()
+		}
+	}
     
 
 	impl sp_authority_discovery::AuthorityDiscoveryApi<Block> for Runtime {

@@ -138,7 +138,7 @@ pub fn run() -> Result<()> {
 					task_manager,
 					import_queue,
 					..
-				} = crate::service::new_partial(&config)?;
+				} = crate::service::new_partial(&config, crate::service::parachain_build_import_queue)?;
 				Ok((cmd.run(client, import_queue), task_manager))
 			})
 		}
@@ -149,7 +149,7 @@ pub fn run() -> Result<()> {
 					client,
 					task_manager,
 					..
-				} = crate::service::new_partial(&config)?;
+				} = crate::service::new_partial(&config, crate::service::parachain_build_import_queue)?;
 				Ok((cmd.run(client, config.database), task_manager))
 			})
 		}
@@ -160,7 +160,7 @@ pub fn run() -> Result<()> {
 					client,
 					task_manager,
 					..
-				} = crate::service::new_partial(&config)?;
+				} = crate::service::new_partial(&config, crate::service::parachain_build_import_queue)?;
 				Ok((cmd.run(client, config.chain_spec), task_manager))
 			})
 		}
@@ -172,7 +172,7 @@ pub fn run() -> Result<()> {
 					task_manager,
 					import_queue,
 					..
-				} = crate::service::new_partial(&config)?;
+				} = crate::service::new_partial(&config, crate::service::parachain_build_import_queue)?;
 				Ok((cmd.run(client, import_queue), task_manager))
 			})
 		}
@@ -188,7 +188,7 @@ pub fn run() -> Result<()> {
 					task_manager,
 					backend,
 					..
-				} = crate::service::new_partial(&config)?;
+				} = crate::service::new_partial(&config, crate::service::parachain_build_import_queue)?;
 				Ok((cmd.run(client, backend), task_manager))
 			})
 		}
@@ -279,7 +279,7 @@ pub fn run() -> Result<()> {
 				info!("Parachain genesis state: {}", genesis_state);
 				info!("Is collating: {}", if collator { "yes" } else { "no" });
 
-				crate::service::start_node(config, key, polkadot_config, id, collator)
+				crate::service::start_node(config, key, polkadot_config, id)
 					.await
 					.map(|r| r.0)
 					.map_err(Into::into)

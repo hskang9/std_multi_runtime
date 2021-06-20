@@ -44,12 +44,12 @@ and parachains.
 **See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for the latest instructions**
 **to register a parathread/parachain on Rococo**
 
-> **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot `rococo-v1` branch
+> **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot `polkadot-v0.9.4` branch
 > to build your parachain against to be compatible!!! You _must_ test locally registering your
 > parachain successfully before you attempt to connect to rococo!
 
-- **[Polkadot `rococo-v1` branch](https://github.com/paritytech/polkadot/tree/rococo-v1)**
-- **[Cumulus `rococo-v1` branch](https://github.com/paritytech/cumulus/tree/rococo-v1)**
+- **[Polkadot `polkadot-v0.9.4` branch](https://github.com/paritytech/polkadot/tree/polkadot-v0.9.4)**
+- **[Cumulus `polkadot-v0.9.4` branch](https://github.com/paritytech/cumulus/tree/polkadot-v0.9.4)**
 
 This network is under _constant development_ - so expect to need to follow progress and update
 your parachains in lock step with the rococo changes if you wish to connect to the network.
@@ -63,10 +63,10 @@ To operate a parathread or parachain, you _must_ connect to a relay chain.
 
 #### Relay Chain Network (Validators)
 
-Clone and build the Polkadot (**`rococo-v1` branch**):
+Clone and build the Polkadot (**`polkadot-v0.9.4` branch**):
 ```bash
 # Get a fresh clone, or `cd` to where you have polkadot already:
-git clone -b rococo-v1 --depth 1 https://github.com:paritytech/polkadot.git
+git clone -b polkadot-v0.9.4 --depth 1 https://github.com:paritytech/polkadot.git
 cd polkadot
 cargo build --release
 ```
