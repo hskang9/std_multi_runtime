@@ -44,12 +44,12 @@ and parachains.
 **See the [Cumulus Workshop](https://substrate.dev/cumulus-workshop/) for the latest instructions**
 **to register a parathread/parachain on Rococo**
 
-> **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot `polkadot-v0.9.4` branch
+> **IMPORTANT NOTE:** you _must_ use the _same_ commit for cumulus and polkadot `polkadot-v0.9.6` branch
 > to build your parachain against to be compatible!!! You _must_ test locally registering your
 > parachain successfully before you attempt to connect to rococo!
 
-- **[Polkadot `polkadot-v0.9.4` branch](https://github.com/paritytech/polkadot/tree/polkadot-v0.9.4)**
-- **[Cumulus `polkadot-v0.9.4` branch](https://github.com/paritytech/cumulus/tree/polkadot-v0.9.4)**
+- **[Polkadot `polkadot-v0.9.6` branch](https://github.com/paritytech/polkadot/tree/polkadot-v0.9.6)**
+- **[Cumulus `polkadot-v0.9.6` branch](https://github.com/paritytech/cumulus/tree/polkadot-v0.9.6)**
 
 This network is under _constant development_ - so expect to need to follow progress and update
 your parachains in lock step with the rococo changes if you wish to connect to the network.
@@ -63,10 +63,10 @@ To operate a parathread or parachain, you _must_ connect to a relay chain.
 
 #### Relay Chain Network (Validators)
 
-Clone and build the Polkadot (**`polkadot-v0.9.4` branch**):
+Clone and build the Polkadot (**`polkadot-v0.9.6` branch**):
 ```bash
 # Get a fresh clone, or `cd` to where you have polkadot already:
-git clone -b polkadot-v0.9.4 --depth 1 https://github.com:paritytech/polkadot.git
+git clone -b polkadot-v0.9.6 --depth 1 https://github.com:paritytech/polkadot.git
 cd polkadot
 cargo build --release
 ```
@@ -121,15 +121,7 @@ From the parachain template working directory:
 ```bash
 # NOTE: this command assumes the chain spec is in a directory named `polkadot`
 # that is at the same level of the template working directory. Change as needed.
-./target/release/parachain-collator\
--d cumulus-parachain/alice\
---collator\
---alice\
---ws-port 9945\
---parachain-id 200\
---\
---execution wasm\
---chain ../polkadot/rococo_local.json
+./target/release/standard-collator -d cumulus-parachain/bob --bob --ws-port 9945 --parachain-id 200 -- --execution wasm --chain ../polkadot/rococo_local.json
 ```
 
 ### Registering on Local Relay Chain
@@ -144,19 +136,16 @@ you modified the code you can use the following commands:
 cargo build --release
 
 # Build the Chain spec
-./target/release/parachain-collator build-spec\
---disable-default-bootnode > ./resources/template-local-plain.json
+./target/release/standard-collator build-spec --disable-default-bootnode > ./resources/template-local-plain.json
 
 # Build the raw file
-./target/release/parachain-collator build-spec \
---chain=./resources/template-local-plain.json \
---raw --disable-default-bootnode > ./resources/template-local.json
+./target/release/standard-collator build-spec --chain=./resources/template-local-plain.json --raw --disable-default-bootnode > ./resources/template-local.json
 
 
 # Export genesis state to `./resources files
-./target/release/parachain-collator export-genesis-state --parachain-id 200 > ./resources/para-200-genesis
+./target/release/standard-collator export-genesis-state --parachain-id 200 > ./resources para-200-genesis
 # export runtime wasm
-./target/release/parachain-collator export-genesis-wasm > ./resources/para-200-wasm
+./target/release/standard-collator export-genesis-wasm > ./resources/para-200-wasm
 ```
 
 > Note: we have set the `para_ID = 200` here, this _must_ be unique for all parathreads/chains on the
