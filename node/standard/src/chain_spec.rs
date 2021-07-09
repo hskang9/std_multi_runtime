@@ -1,4 +1,5 @@
 use cumulus_primitives_core::ParaId;
+use hex_literal::hex;
 use sc_chain_spec::ChainSpecExtension;
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
@@ -17,6 +18,8 @@ use sp_runtime::{
 use primitives::{AssetId, Balance};
 
 pub const CORE_ASSET_ID: AssetId = 0;
+
+pub const ROC_PARA_ID: u32 = 2051;
 
 type AccountPublic = <Signature as Verify>::Signer;
 
@@ -70,15 +73,15 @@ pub fn authority_keys_from_seed(seed: &str) -> (AccountId, AccountId, AuraId, Im
 
 /// Gen chain specification for given parachain id
 pub fn get_chain_spec(id: ParaId) -> ChainSpec {
-
+    let root_key: AccountId = hex!["0x6acb693c8909fd08b0d06c2ea1dded1530431a4808407cba6d50eb9f9afffc0b"].into();
 
     ChainSpec::from_genesis(
-        "Local Testnet",
-        "local_testnet",
+        "Opporunity Rococo",
+        "opportunity_rococo",
         ChainType::Local,
         move || {
             testnet_genesis(
-                get_account_id_from_seed::<sr25519::Public>("Alice"),
+                root_key,
                 None,
                 id,
             )
@@ -88,7 +91,7 @@ pub fn get_chain_spec(id: ParaId) -> ChainSpec {
         None,
         None,
         Extensions {
-            relay_chain: "westend-dev".into(),
+            relay_chain: "rococo".into(),
             para_id: id.into(),
         },
     )
